@@ -101,15 +101,21 @@ export class CompanyService {
       throw new NotFoundError("company_not_found");
     }
 
+    // Batch insert for better performance
+    const BATCH_SIZE = 50;
+    let batch: any[] = [];
     for (const rec of records) {
       const name = rec[comp.usersNameKey!];
       const email = rec[comp.usersEmailKey!];
-
       if (!name || !email) continue;
-
-      await this.employeeRepo.save(
-        this.employeeRepo.create({ name, email, companyId })
-      );
+      batch.push(this.employeeRepo.create({ name, email, companyId }));
+      if (batch.length >= BATCH_SIZE) {
+        await this.employeeRepo.saveMany(batch, manager);
+        batch = [];
+      }
+    }
+    if (batch.length > 0) {
+      await this.employeeRepo.saveMany(batch, manager);
     }
   }
 

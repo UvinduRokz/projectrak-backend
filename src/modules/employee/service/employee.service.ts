@@ -31,8 +31,8 @@ export class EmployeeService {
     });
   }
 
-  async findAll(): Promise<EmployeeResponseDto[]> {
-    const employees = await this.employeeRepo.findAll();
+  async findAll(companyId?: string): Promise<EmployeeResponseDto[]> {
+    const employees = await this.employeeRepo.findAll(companyId);
     return plainToInstance(EmployeeResponseDto, employees, {
       excludeExtraneousValues: true,
     });

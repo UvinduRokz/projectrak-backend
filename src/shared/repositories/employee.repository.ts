@@ -19,13 +19,22 @@ export class EmployeeRepository {
     return repo.findOneBy({ id });
   }
 
-  findByEmail(email: string, manager?: EntityManager): Promise<Employee | null> {
+  findByEmail(
+    email: string,
+    manager?: EntityManager
+  ): Promise<Employee | null> {
     const repo = manager ? manager.getRepository(Employee) : this.repo;
     return repo.findOneBy({ email });
   }
 
-  async findAll(manager?: EntityManager): Promise<Employee[]> {
+  async findAll(
+    companyId?: string,
+    manager?: EntityManager
+  ): Promise<Employee[]> {
     const repo = manager ? manager.getRepository(Employee) : this.repo;
+    if (companyId) {
+      return repo.find({ where: { companyId } });
+    }
     return repo.find();
   }
 
@@ -47,5 +56,9 @@ export class EmployeeRepository {
   deleteById(id: string, manager?: EntityManager): Promise<void> {
     const repo = manager ? manager.getRepository(Employee) : this.repo;
     return repo.delete(id).then(() => undefined);
+  }
+  async saveMany(entities: Employee[], manager?: EntityManager): Promise<Employee[]> {
+    const repo = manager ? manager.getRepository(Employee) : this.repo;
+    return repo.save(entities);
   }
 }

@@ -67,10 +67,11 @@ employeeRouter.post(
  *                 $ref: '#/components/schemas/EmployeeResponseDto'
  */
 // GET /employees
-employeeRouter.get("", async (_req, res, next) => {
+employeeRouter.get("", async (req, res, next) => {
   try {
     const service = Container.get(EmployeeService);
-    const list = await service.findAll();
+    const companyId = req.query.companyId as string | undefined;
+    const list = await service.findAll(companyId);
     res.json(list);
   } catch (err) {
     next(err);
